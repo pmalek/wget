@@ -1,0 +1,12 @@
+language: cpp
+sudo: false
+dist: trusty
+os: linux
+before_install:
+  - gcc -v
+  - g++ -v
+  - mkdir build && cd build && cmake ..
+script: cmake --build . -- -j
+compiler:
+  - clang
+  - gcc
