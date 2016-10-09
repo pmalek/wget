@@ -4,12 +4,12 @@ project(wget C CXX) # C is necessary for find_package(Threads) for some reason
 
 # Checking compiler for C++14
 include(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++14" COMPILER_SUPPORTS_CXX14)
-if(NOT COMPILER_SUPPORTS_CXX14)
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++14 support. Please use a different C++ compiler.")
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+if(NOT COMPILER_SUPPORTS_CXX11)
+  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
 endif()
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 add_compile_options("-Wall")
 
@@ -21,6 +21,7 @@ add_executable(wget
 # Checking boost ...
 find_package(Boost 1.58.0 REQUIRED COMPONENTS system program_options)
 target_link_libraries(wget ${Boost_LIBRARIES})
+target_include_directories(wget PRIVATE ${Boost_INCLUDE_DIRS})
 
 # ... and pthreads
 set(THREADS_PREFER_PTHREAD_FLAG ON)

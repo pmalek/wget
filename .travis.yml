@@ -1,12 +1,83 @@
 language: cpp
 sudo: false
-dist: trusty
-os: linux
+
+env:
+  global:
+    # Maintenance note: to move to a new version
+    # of boost, update both BOOST_ROOT and BOOST_URL.
+    # Note that for simplicity, BOOST_ROOT's final
+    # namepart must match the folder name internal
+    # to boost's .tar.gz.
+    - BOOST_ROOT=$HOME/boost_1_60_0
+    - BOOST_URL='http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.60.0%2Fboost_1_60_0.tar.gz&ts=1460417589&use_mirror=netix'
+
+
+matrix:
+  include:
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
+          packages:
+            - gcc-4.9
+            - g++-4.9
+            - cmake
+            - cmake-data
+      env:
+        - COMPILER=g++-4.9
+    - compiler: gcc
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - george-edison55-precise-backports
+          packages:
+            - gcc-5
+            - g++-5
+            - cmake
+            - cmake-data
+      env:
+        - COMPILER=g++-5
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.6
+            - george-edison55-precise-backports
+          packages:
+            - clang-3.6
+            - cmake
+            - cmake-data
+      env:
+        - COMPILER=clang++-3.6
+    - compiler: clang
+      addons:
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+            - llvm-toolchain-precise-3.7
+            - george-edison55-precise-backports
+          packages:
+            - clang-3.7
+            - cmake
+            - cmake-data
+      env:
+        - COMPILER=clang++-3.7
+
+cache:
+  directories:
+  - $BOOST_ROOT
+
 before_install:
-  - gcc -v
-  - g++ -v
+  - scripts/install-boost.sh
+  - export CXX=$COMPILER
+  - $CXX -v
   - mkdir build && cd build && cmake ..
-script: cmake --build . -- -j
-compiler:
-  - clang
-  - gcc
+
+script:
+  - cmake --build .
+  - ./wget www.google.com
+  - ./wget stackoverflow.com
