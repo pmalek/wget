@@ -9,6 +9,8 @@ namespace po = boost::program_options;
 
 struct ArgParser {
   ArgParser(int argc, const char** argv) : argc(argc), argv(argv) {}
+  ArgParser(const ArgParser&) = delete;
+  ArgParser& operator=(const ArgParser&) = delete;
 
   bool parse() {
     po::options_description desc("Allowed options");

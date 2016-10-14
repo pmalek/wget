@@ -11,7 +11,7 @@ endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-add_compile_options("-Wall")
+add_compile_options(-Wpedantic -Wextra -Wall -Wsign-conversion)
 
 add_executable(wget
   src/main.cpp
@@ -21,7 +21,7 @@ add_executable(wget
 # Checking boost ...
 find_package(Boost 1.58.0 REQUIRED COMPONENTS system program_options)
 target_link_libraries(wget ${Boost_LIBRARIES})
-target_include_directories(wget PRIVATE ${Boost_INCLUDE_DIRS})
+target_include_directories(wget SYSTEM PRIVATE ${Boost_INCLUDE_DIRS})
 
 # ... and pthreads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
@@ -44,4 +44,4 @@ download_project(PROJ                Beast
                  ${UPDATE_DISCONNECTED_IF_AVAILABLE}
 )
 add_subdirectory(${Beast_SOURCE_DIR} ${Beast_BINARY_DIR} EXCLUDE_FROM_ALL)
-target_include_directories(wget PRIVATE ${Beast_SOURCE_DIR}/include)
+target_include_directories(wget SYSTEM PRIVATE ${Beast_SOURCE_DIR}/include)

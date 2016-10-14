@@ -94,7 +94,7 @@ void Downloader::queue_read(const boost::system::error_code &ec) {
 
   beast::http::async_read(
       tcp_socket, response_streambuf, resp, std::bind(&Downloader::read_handler, this, _1));
-};
+}
 
 void Downloader::resolve_handler(const boost::system::error_code &ec, tcp::resolver::iterator it,
                                  const Endpoint &endpoint) {
@@ -111,4 +111,4 @@ void Downloader::resolve_handler(const boost::system::error_code &ec, tcp::resol
     return;
   }
   tcp_socket.async_connect(*it, std::bind(&Downloader::connect_handler, this, _1, endpoint));
-};
+}
