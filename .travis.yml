@@ -75,9 +75,10 @@ before_install:
   - scripts/install-boost.sh
   - export CXX=$COMPILER
   - $CXX -v
-  - mkdir build && cd build && cmake ..
+  - git submodule update --init --recursive
 
 script:
+  - mkdir build && cd build && cmake ..
   - cmake --build .
-  - ./wget www.google.com
-  - ./wget stackoverflow.com
+  - ./wget http://www.google.com
+  - ./wget http://kernel.ubuntu.com/\~kernel-ppa/mainline/v4.0-vivid/BUILT

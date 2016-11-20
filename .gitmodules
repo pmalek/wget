@@ -1,0 +1,8 @@
+[submodule "deps/uri"]
+	path = deps/uri
+	url = https://github.com/reBass/uri
+	shallow = true
+[submodule "deps/Beast"]
+	path = deps/Beast
+	url = https://github.com/vinniefalco/Beast.git
+	shallow = true
