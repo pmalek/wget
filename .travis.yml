@@ -8,8 +8,8 @@ env:
     # Note that for simplicity, BOOST_ROOT's final
     # namepart must match the folder name internal
     # to boost's .tar.gz.
-    - BOOST_ROOT=$HOME/boost_1_60_0
-    - BOOST_URL='http://downloads.sourceforge.net/project/boost/boost/1.60.0/boost_1_60_0.tar.gz?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.60.0%2Fboost_1_60_0.tar.gz&ts=1460417589&use_mirror=netix'
+    - BOOST_ROOT=$HOME/boost_1_62_0
+    - BOOST_URL='http://downloads.sourceforge.net/project/boost/boost/1.62.0/boost_1_62_0.tar.bz2?r=https%3A%2F%2Fsourceforge.net%2Fprojects%2Fboost%2Ffiles%2Fboost%2F1.62.0%2F&ts=1479653651&use_mirror=netix'
 
 
 matrix:
