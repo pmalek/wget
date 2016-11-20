@@ -36,7 +36,14 @@ Downloader::Downloader(const std::vector<std::string> &urls)
 void Downloader::go() {
   for(const auto &endpoint : endpoints) {
     tcp::resolver::query q{endpoint.host, "80"};
-    resolv.async_resolve(q, std::bind(&Downloader::resolve_handler, this, _1, _2, endpoint));
+
+    std::cout << "*******************************" << '\n';
+    std::cout << "Resolving " << endpoint.host << '\n';
+    std::cout << "*******************************"
+              << "\n\n";
+
+    resolv.async_resolve(
+        q, std::bind(&Downloader::resolve_handler, this, _1, _2, endpoint));
   }
 
   ioservice.run();
@@ -44,19 +51,21 @@ void Downloader::go() {
 
 void Downloader::read_handler(const boost::system::error_code &ec) {
   if(ec) {
-    ioservice.post(
-        [=]() { std::cerr << "Problem reading the response: \"" << ec.message() << "\"\n"; });
+    ioservice.post([=]() {
+      std::cerr << "Problem reading the response: \"" << ec.message() << "\"\n";
+    });
     return;
   }
 
   std::cout << "\n*******************************" << '\n';
   std::cout << "Headers\n\n";
-  for(auto i : resp.headers) std::cout << i.first << " : " << i.second << '\n';
+  for(auto i : resp.fields) std::cout << i.first << " : " << i.second << '\n';
   std::cout << "*******************************"
             << "\n\n";
 
+  std::cout << "\n\nReceived status code: " << resp.status << '\n';
+
   if(resp.status != 200) {
-    std::cout << "\n\nReceived error code: " << resp.status << '\n';
     std::cout << "Unfortunately this is not yet supported :(" << '\n';
     return;
   }
@@ -69,12 +78,12 @@ void Downloader::connect_handler(const boost::system::error_code &ec, const Endp
   if(ec) return;
 
   // Send HTTP request using beast
-  beast::http::request_v1<beast::http::empty_body> req;
+  beast::http::request<beast::http::empty_body> req;
   req.method = "GET";
   req.url = endpoint.url;
   req.version = 11;
-  req.headers.insert("Host", endpoint.host);
-  req.headers.insert("User-Agent", "Beast");
+  req.fields.insert("Host", endpoint.host);
+  req.fields.insert("User-Agent", "Beast");
   beast::http::prepare(req);
 
   std::cout << "*******************************" << '\n';
@@ -87,22 +96,21 @@ void Downloader::connect_handler(const boost::system::error_code &ec, const Endp
 
 void Downloader::queue_read(const boost::system::error_code &ec) {
   if(ec) {
-    ioservice.post(
-        [=]() { std::cerr << "Problem reading the response: \"" << ec.message() << "\"\n"; });
+    ioservice.post([=]() {
+      std::cerr << "Problem reading the response: \"" << ec.message() << "\"\n";
+    });
     return;
   }
 
-  beast::http::async_read(
-      tcp_socket, response_streambuf, resp, std::bind(&Downloader::read_handler, this, _1));
+  beast::http::async_read(tcp_socket,
+                          response_streambuf,
+                          resp,
+                          std::bind(&Downloader::read_handler, this, _1));
 }
 
-void Downloader::resolve_handler(const boost::system::error_code &ec, tcp::resolver::iterator it,
+void Downloader::resolve_handler(const boost::system::error_code &ec,
+                                 tcp::resolver::iterator it,
                                  const Endpoint &endpoint) {
-  std::cout << "*******************************" << '\n';
-  std::cout << "Resolving " << endpoint.host << '\n';
-  std::cout << "*******************************"
-            << "\n\n";
-
   if(ec) {
     ioservice.post([=]() {
       std::cerr << "Problem resolving URL: \"" << endpoint.host << "\"\n";
@@ -110,5 +118,13 @@ void Downloader::resolve_handler(const boost::system::error_code &ec, tcp::resol
     });
     return;
   }
-  tcp_socket.async_connect(*it, std::bind(&Downloader::connect_handler, this, _1, endpoint));
+
+  auto ep = it->endpoint();
+  std::cout << "*******************************" << '\n';
+  std::cout << "Resolved to " << ep.address() << ':' << ep.port() << '\n';
+  std::cout << "*******************************"
+            << "\n\n";
+
+  tcp_socket.async_connect(
+      *it, std::bind(&Downloader::connect_handler, this, _1, endpoint));
 }

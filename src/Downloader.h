@@ -5,7 +5,7 @@
 #include <boost/asio/ip/tcp.hpp>
 
 #include <beast/core/streambuf.hpp>
-#include <beast/http/message_v1.hpp>
+#include <beast/http/message.hpp>
 #include <beast/http/string_body.hpp>
 
 class Downloader {
@@ -27,7 +27,7 @@ private:
 
   std::vector<Endpoint> endpoints;
 
-  beast::http::response_v1<beast::http::string_body> resp;
+  beast::http::response<beast::http::string_body> resp;
   beast::streambuf response_streambuf;
 
   boost::asio::io_service ioservice;
