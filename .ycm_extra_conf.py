@@ -1,69 +1,33 @@
 import os
 import ycm_core
 
-flags = [
-'-Wall',
-'-Wextra',
-'-Werror',
-'-Wno-long-long',
-'-Wno-variadic-macros',
-'-Wno-char-subscripts',
-'-fexceptions',
-'-DNDEBUG',
-'-std=c++14',
-'-x',
-'c++',
-'-isystem',
-'/usr/include/',
-'-isystem',
-'/usr/include/c++/',
-'-isystem',
-'/usr/include/c++/6/',
-'-I',
-'.',
-'-I',
-'src/',
-'-I',
-'deps/Beast/include/',
-'-I',
-'deps/uri/include/',
-'-I',
-'include/',
-'-I',
-'test/',
-'-I',
-'./tests/gmock/gtest',
-'-I',
-'./tests/gmock/gtest/include',
-'-I',
-'./tests/gmock',
-'-I',
-'./tests/gmock/include',
-]
-
-
-# Set this to the absolute path to the folder (NOT the file!) containing the
-# compile_commands.json file to use that instead of 'flags'. See here for
-# more details: http://clang.llvm.org/docs/JSONCompilationDatabase.html
-#
-# You can get CMake to generate this file for you by adding:
-#   set( CMAKE_EXPORT_COMPILE_COMMANDS 1 )
-# to your CMakeLists.txt file.
-#
-# Most projects will NOT need to set this to anything; you can just change the
-# 'flags' list of compilation flags. Notice that YCM itself uses that approach.
-compilation_database_folder = ''
-
-if os.path.exists( compilation_database_folder ):
-  database = ycm_core.CompilationDatabase( compilation_database_folder )
-else:
-  database = None
-
-SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]
+from clang_helpers import PrepareClangFlags
 
 def DirectoryOfThisScript():
-  return os.path.dirname( os.path.abspath( __file__ ) )
+    return os.path.dirname(os.path.abspath(__file__))
 
+# This is the single most important line in this script. Everything else is just nice to have but
+# not strictly necessary.
+compilation_database_folder = DirectoryOfThisScript()
+
+# This provides a safe fall-back if no compilation commands are available. You could also add a
+# includes relative to your project directory, for example.
+flags = [
+    '-Wall',
+    '-Wextra',
+    '-std=c++14',
+    '-x', 'c++',
+    '-isystem', '/usr/local/include',
+    '-isystem', '/usr/include',
+    '-I.',
+]
+
+if compilation_database_folder:
+    database = ycm_core.CompilationDatabase(compilation_database_folder)
+else:
+    database = None
+
+SOURCE_EXTENSIONS = [ '.cpp', '.cxx', '.cc', '.c', '.m', '.mm' ]
 
 def MakeRelativePathsInFlagsAbsolute( flags, working_directory ):
   if not working_directory:
@@ -129,13 +93,6 @@ def FlagsForFile( filename, **kwargs ):
       compilation_info.compiler_flags_,
       compilation_info.compiler_working_dir_ )
 
-    # NOTE: This is just for YouCompleteMe; it's highly likely that your project
-    # does NOT need to remove the stdlib flag. DO NOT USE THIS IN YOUR
-    # ycm_extra_conf IF YOU'RE NOT 100% SURE YOU NEED IT.
-    # try:
-      # final_flags.remove( '-stdlib=libc++' )
-    # except ValueError:
-      # pass
   else:
     relative_to = DirectoryOfThisScript()
     final_flags = MakeRelativePathsInFlagsAbsolute( flags, relative_to )
