@@ -5,6 +5,7 @@
 ### How to build
 
 ```
-git clone https://github.com/pmalek/wget.git
-mkdir build && cd build && cmake ../wget && cmake --build .
+git clone https://github.com/pmalek/wget.git && \
+cd wget && git submodule update --init --recursive --depth 1 && \
+mkdir ../build && cd ../build && cmake ../wget && cmake --build .
 ```
