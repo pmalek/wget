@@ -63,5 +63,6 @@ add_subdirectory(src/)
 ###########################################################
 # tests
 if(WGET_BUILD_TESTS)
+  enable_testing()
   add_subdirectory(test)
 endif(WGET_BUILD_TESTS)

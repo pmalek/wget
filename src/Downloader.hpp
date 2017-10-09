@@ -11,7 +11,7 @@
 
 class Downloader {
 public:
-  Downloader(const std::vector<std::string> &urls);
+  Downloader(boost::asio::io_service& ioservice);
   void go();
 
 private:
@@ -29,7 +29,7 @@ private:
 
   std::vector<network::uri> uris;
 
-  boost::asio::io_service ioservice;
+  boost::asio::io_service& ioservice;
   boost::asio::ip::tcp::socket tcp_socket;
 
   boost::asio::ip::tcp::resolver resolv;

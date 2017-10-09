@@ -2,15 +2,11 @@
 #include <vector>
 
 #include <gtest/gtest.h>
+#include <boost/asio/io_service.hpp>
 
 #include "Downloader.hpp"
 
-TEST(DownloaderTests, XXX){
-  std::vector<std::string> urls = {"http://www.google.com"};
-  Downloader ds(urls);
-}
-
-TEST(DownloaderTests, THROW){
-  std::vector<std::string> urls = {"htp://www.google.com"};
-  Downloader ds(urls);
+TEST(DownloaderTests, constructorDoesntThrow){
+  boost::asio::io_service ioservice;
+  EXPECT_NO_THROW(Downloader d{ioservice});
 }
