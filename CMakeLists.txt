@@ -17,6 +17,7 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS system program_options)
 # ... and pthreads
 set(THREADS_PREFER_PTHREAD_FLAG ON)
 find_package(Threads)
+find_package(OpenSSL REQUIRED)
 
 ###########################################################
 

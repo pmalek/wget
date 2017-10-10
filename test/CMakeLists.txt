@@ -13,10 +13,6 @@ foreach(testSrc ${TEST_SRCS})
 
         get_filename_component(testName ${testSrc} NAME_WE)
 
-        message(STATUS )
-        message(STATUS ${testName})
-        message(STATUS )
-
         #Add compile target
         add_executable(${testName} $<TARGET_OBJECTS:wget_src> ${testSrc})
 
@@ -27,7 +23,7 @@ foreach(testSrc ${TEST_SRCS})
                                                        ${CMAKE_SOURCE_DIR}/deps/uri/include)
 
         #link to Boost libraries AND your targets and dependencies
-        target_link_libraries(${testName} gmock_main rapidcheck network-uri ${Boost_LIBRARIES} pthread)
+        target_link_libraries(${testName} gmock_main rapidcheck network-uri ${Boost_LIBRARIES} ${OPENSSL_LIBRARIES})
 
         #I like to move testing binaries into a test directory
         set_target_properties(${testName} PROPERTIES

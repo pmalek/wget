@@ -1,8 +1,9 @@
+#include <future>
 #include <string>
-#include <vector>
 
 #include <boost/asio/io_service.hpp>
 #include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/ssl/stream.hpp>
 
 #include <beast/core/streambuf.hpp>
 #include <beast/http/string_body.hpp>
@@ -11,26 +12,38 @@
 
 class Downloader {
 public:
-  Downloader(boost::asio::io_service& ioservice);
-  void go();
+  using response_type = beast::http::response<beast::http::string_body>;
+  using future_type = std::future<response_type>;
+
+  explicit Downloader(boost::asio::io_service &ioservice);
+  future_type download_async(const std::string &url);
 
 private:
-  void read_handler(const boost::system::error_code &ec,
-                    std::shared_ptr<beast::http::response<beast::http::string_body>> response,
-                    std::shared_ptr<beast::streambuf>);
+  struct State {
+    std::promise<response_type> promise;
+    network::uri uri;
+    boost::asio::ip::tcp::socket socket;
+    std::unique_ptr<boost::asio::ssl::stream<boost::asio::ip::tcp::socket &>>
+        ssl_stream;
+    std::unique_ptr<beast::http::response<beast::http::string_body>> response;
+    std::unique_ptr<beast::streambuf> streambuf;
 
-  void connect_handler(const boost::system::error_code &ec, const network::uri &uri);
+    State(std::promise<response_type> &&promise,
+          boost::asio::ip::tcp::socket &&socket)
+        : promise{std::move(promise)}, socket(std::move(socket)) {}
+  };
+  using state_ptr = std::shared_ptr<State>;
 
-  void queue_read(const boost::system::error_code &ec);
+  void download_async(const std::string &url, std::promise<response_type> &&promise);
+  void download_async(state_ptr state);
 
-  void resolve_handler(const boost::system::error_code &ec,
-                       boost::asio::ip::tcp::resolver::iterator it,
-                       const network::uri &uri);
+  void on_resolve(state_ptr state,
+                  const boost::system::error_code &ec,
+                  boost::asio::ip::tcp::resolver::iterator iterator);
+  void on_connect(state_ptr state, const boost::system::error_code &ec);
+  void on_request_sent(state_ptr state, const boost::system::error_code &ec);
+  void on_read(state_ptr state, const boost::system::error_code &ec);
 
-  std::vector<network::uri> uris;
-
-  boost::asio::io_service& ioservice;
-  boost::asio::ip::tcp::socket tcp_socket;
-
+  boost::asio::io_service &ioservice;
   boost::asio::ip::tcp::resolver resolv;
 };
