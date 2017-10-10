@@ -45,6 +45,13 @@ matrix:
           packages: ["gcc-6", "g++-6", "cmake", "cmake-data"]
       env:
         - COMPILER=g++-6
+    - compiler: gcc
+      addons:
+        apt:
+          sources: *apt_sources
+          packages: ["gcc-7", "g++-7", "cmake", "cmake-data"]
+      env:
+        - COMPILER=g++-7
     - compiler: clang
       addons:
         apt:
