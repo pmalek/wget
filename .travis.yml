@@ -59,13 +59,6 @@ matrix:
           packages: ["clang-3.7", "cmake", "cmake-data"]
       env:
         - COMPILER=clang++-3.7
-    - compiler: clang
-      addons:
-        apt:
-          sources: *apt_sources
-          packages: ["clang-3.8", "cmake", "cmake-data"]
-      env:
-        - COMPILER=clang++-3.8
 
 cache:
   directories:
