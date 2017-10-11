@@ -78,7 +78,7 @@ before_install:
   - git submodule update --init --recursive
 
 script:
-  - mkdir build && cd build && cmake ..
+  - mkdir build && cd build && cmake -DCMAKE_VERBOSE_MAKEFILE=1 ..
   - cmake --build .
   - ./wget http://www.google.com
   - ./wget http://kernel.ubuntu.com/\~kernel-ppa/mainline/v4.0-vivid/BUILT
